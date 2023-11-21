@@ -1,23 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Products from "./components/Products";
+import { Routes, Route } from "react-router-dom";
+import Cart from "./components/Cart";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
+  const [cartProds, setCartProds] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        let response = await axios.get(
+          `https://geektrust.s3.ap-southeast-1.amazonaws.com/coding-problems/shopping-cart/catalogue.json`
+        );
+        setProducts(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  },[])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route
+          path="/cart"
+          element={
+            <Cart
+              cartItems={cartProds}
+              setCartItems={setCartProds}
+              products={products}
+              setProducts={setProducts}
+            />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <Products
+              cartItems={cartProds}
+              setCartItems={setCartProds}
+              products={products}
+              setProducts={setProducts}
+            />
+          }
+        />
+      </Routes>
     </div>
   );
 }
